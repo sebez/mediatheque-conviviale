@@ -106,12 +106,17 @@
   <div id="app">
     <nav class="navbar fixed-top navbar-light bg-light">
       <a class="navbar-brand" href="#">📚 Médiathèque conviviale 📚</a>
+      <div class="navbar-brand">
+        <form class="form-inline my-2 my-lg-0">
+          <input type="text" class="form-control" v-model="searchTerm" placeholder="Rechercher un livre...">
+        </form>
+      </div>
     </nav>
-    <br/>
-    <br/>
+    <br />
+    <br />
     <div id="resultats">
       <ul>
-        <li id="50673" class="search-item" v-for="book in books" :key="book.Title">
+        <li class="search-item" v-for="book in filteredBooks" :key="book.Title">
           <div class="notice_container Livre">
             <div class="notice notice_courte row">
               <div class="notice_corps media col-sm-9 col-md-10">
@@ -152,11 +157,31 @@
     createApp({
       data() {
         return {
-          books: [] // Array to store books data
+          books: [], // Array to store books data
+          searchTerm: '' // Texte de recherche
         }
       },
       mounted() {
         this.loadBooks()
+      },
+      computed: {
+        // Filtrer les livres en fonction du terme de recherche
+        filteredBooks() {
+          return this.books.filter(book => {
+            console.info("Filtrage avec " + this.searchTerm)
+            if (!this.searchTerm) {
+              return true;
+            }
+
+            // Vérifier si l'un des champs du livre contient le terme de recherche
+            return Object.values(book).some(value => {
+              if (typeof value === 'string') {
+                return value.toLowerCase().includes(this.searchTerm.toLowerCase())
+              }
+              return false
+            })
+          })
+        }
       },
       methods: {
         async loadBooks() {
