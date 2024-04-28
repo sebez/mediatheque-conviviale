@@ -1,7 +1,7 @@
 # Chemin du fichier ISBN
 $cheminFichier = "data/definition/isbn.txt"
 $cheminBookApiKey = "sources/admin/booksApi.key"
-$cheminFichierBooks = "data/full/books.json"
+$cheminFichierBooks = "data/full/books.ndjson"
 
 if (Test-Path $cheminBookApiKey) {
     # Charge la clé
@@ -36,6 +36,11 @@ function GetBookInfo($isbn) {
 if (Test-Path $cheminFichier) {
     # Charger les codes ISBN depuis le fichier
     $codesISBN = Get-Content $cheminFichier
+
+    # Supprime le fichier books
+    if (Test-Path $cheminFichierBooks) {
+        Remove-Item $cheminFichierBooks
+    }
 
     # Ouvrir le fichier de sortie JSON en écriture
     $fileStream = [System.IO.StreamWriter] $cheminFichierBooks
