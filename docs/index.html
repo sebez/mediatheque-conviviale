@@ -104,7 +104,11 @@
 
 <body>
   <div id="app">
-    <h1>📚 Médiathèque conviviale 📚</h1>
+    <nav class="navbar fixed-top navbar-light bg-light">
+      <a class="navbar-brand" href="#">📚 Médiathèque conviviale 📚</a>
+    </nav>
+    <br/>
+    <br/>
     <div id="resultats">
       <ul>
         <li id="50673" class="search-item" v-for="book in books" :key="book.Title">
