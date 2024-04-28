@@ -1,7 +1,7 @@
 # Chemin du fichier ISBN
 $cheminFichier = "data/definition/isbn.txt"
 $cheminBookApiKey = "sources/admin/booksApi.key"
-$cheminFichierBooks = "data/full/books.ndjson"
+$cheminFichierBooks = "docs/data/books.ndjson"
 
 if (Test-Path $cheminBookApiKey) {
     # Charge la clé
