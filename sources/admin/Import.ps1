@@ -1,12 +1,13 @@
 # Chemin du fichier ISBN
 $cheminFichier = "data/definition/isbn.txt"
 $cheminBookApiKey = "sources/admin/booksApi.key"
+$cheminFichierBooks = "data/full/books.json"
 
 if (Test-Path $cheminBookApiKey) {
     # Charge la clé
     $apiKey = Get-Content $cheminBookApiKey
 } else {
-    Write-Host "Le fichier $cheminBookApiKey n'existe pas."
+    Write-Host "File not found : $cheminBookApiKey"
     Return
 }
 
@@ -36,22 +37,38 @@ if (Test-Path $cheminFichier) {
     # Charger les codes ISBN depuis le fichier
     $codesISBN = Get-Content $cheminFichier
 
+    # Ouvrir le fichier de sortie JSON en écriture
+    $fileStream = [System.IO.StreamWriter] $cheminFichierBooks
+
     # Parcourir chaque code ISBN
     foreach ($isbn in $codesISBN) {
         Write-Host "Chargement des informations pour ISBN : $isbn"
         $bookInfo = GetBookInfo $isbn
         if ($bookInfo) {
-            # Afficher les informations du livre
-            Write-Host "Titre : $($bookInfo.Title)"
-            Write-Host "Auteurs : $($bookInfo.Authors)"
-            Write-Host "Année d'édition : $($bookInfo.PublishedYear)"
-            Write-Host "Éditeur : $($bookInfo.Publisher)"
-            Write-Host ""
+            if ($bookInfo) {
+                # Convertir les informations du livre en JSON
+                $jsonObject = @{
+                    Title = $bookInfo.Title
+                    Authors = $bookInfo.Authors
+                    PublishedYear = $bookInfo.PublishedYear
+                    Publisher = $bookInfo.Publisher
+                } | ConvertTo-Json -Depth 100 -Compress
+    
+                # Écrire le JSON dans le fichier de sortie
+                $fileStream.WriteLine($jsonObject)
+            } else {
+                Write-Host "No data found for ISBN : $isbn"
+            }
         } else {
-            Write-Host "Aucune information trouvée pour ISBN : $isbn"
+            Write-Host "No data found for ISBN : $isbn"
             Write-Host ""
         }
     }
+
+    # Fermer le fichier de sortie JSON
+    $fileStream.Close()
+    Write-Host "Data written in file $cheminFichierBooks."
+
 } else {
-    Write-Host "Le fichier $cheminFichier n'existe pas."
+    Write-Host "File not found $cheminFichier"
 }
