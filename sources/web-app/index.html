@@ -6,7 +6,13 @@
     }
   </script>
   
-  <div id="app">{{ message }}</div>
+  <div id="app">
+    <ul>
+      <li v-for="book in books" :key="book.Title">
+        <strong>{{ book.Title }}</strong> - {{ book.Authors }} ({{ book.PublishedYear }}) - {{ book.Publisher }}
+      </li>
+    </ul>
+  </div>
   
   <script type="module">
     import { createApp } from 'vue'
@@ -14,8 +20,28 @@
     createApp({
       data() {
         return {
-          message: 'Hello Vue!'
+          books: [] // Array to store books data
+        }
+      },
+      mounted() {
+        this.loadBooks()
+      },
+      methods: {
+        async loadBooks() {
+          try {
+            const response = await fetch('./data/books.ndjson')
+            const text = await response.text()
+  
+            // Parse NDJSON format
+            const books = text.split('\n').filter(line => line.trim() !== '').map(line => JSON.parse(line))
+            
+            // Set books data
+            this.books = books
+          } catch (error) {
+            console.error('Erreur lors du chargement des livres :', error)
+          }
         }
       }
     }).mount('#app')
   </script>
+  
