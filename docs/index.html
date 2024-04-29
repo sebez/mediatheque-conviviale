@@ -116,7 +116,7 @@
     <br />
     <div id="resultats">
       <template v-if="filteredBooks.length === 0">
-        <br/><br/>
+        <br /><br />
         <p>Aucun livre avec ce filtre</p>
       </template>
       <template v-else>
@@ -160,6 +160,14 @@
   <script type="module">
     import { createApp } from 'vue'
 
+    function normalize(value) {
+      return value
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .toLowerCase()
+        .trim();
+    }
+
     createApp({
       data() {
         return {
@@ -179,10 +187,12 @@
               return true;
             }
 
+            var query = normalize(this.searchTerm);
+
             // Vérifier si l'un des champs du livre contient le terme de recherche
             return Object.values(book).some(value => {
               if (typeof value === 'string') {
-                return value.toLowerCase().includes(this.searchTerm.toLowerCase())
+                return  normalize(value).includes(query)
               }
               return false
             })
