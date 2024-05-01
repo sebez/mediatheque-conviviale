@@ -1,7 +1,7 @@
 # Chemin du fichier ISBN
 $cheminFichier = "data/definition/isbn.txt"
 $cheminBookApiKey = "sources/admin/booksApi.key"
-$cheminFichierBooks = "docs/data/books.ndjson"
+$cheminFichierBooks = "data/full/books.ndjson"
 
 if (Test-Path $cheminBookApiKey) {
     # Charge la clé
@@ -21,11 +21,17 @@ function GetBookInfo($isbn) {
         $authors = $bookInfo.authors -join ", "
         $publishedYear = $bookInfo.publishedDate
         $publisher = $bookInfo.publisher
-        return @{
+        $subtitle = $bookInfo.subtitle
+        $description = $bookInfo.description
+        $fullIsbn = $bookInfo.industryIdentifiers[1].identifier
+        return @{            
             Title = $title
             Authors = $authors
             PublishedYear = $publishedYear
             Publisher = $publisher
+            Subtitle = $subtitle
+            Description = $description
+            FullIsbn = $fullIsbn
         }
     } else {
         return $null
@@ -52,12 +58,7 @@ if (Test-Path $cheminFichier) {
         if ($bookInfo) {
             if ($bookInfo) {
                 # Convertir les informations du livre en JSON
-                $jsonObject = @{
-                    Title = $bookInfo.Title
-                    Authors = $bookInfo.Authors
-                    PublishedYear = $bookInfo.PublishedYear
-                    Publisher = $bookInfo.Publisher
-                } | ConvertTo-Json -Depth 100 -Compress
+                $jsonObject = $bookInfo | ConvertTo-Json -Depth 100 -Compress
     
                 # Écrire le JSON dans le fichier de sortie
                 $fileStream.WriteLine($jsonObject)
